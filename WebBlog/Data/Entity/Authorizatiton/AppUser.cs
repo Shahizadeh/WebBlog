@@ -8,9 +8,9 @@ namespace WebBlog.Data.Entity.Authorizatiton
     {
         [Required]
         [Column(TypeName = "nvarchar(20)")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = default!;
         [Required]
         [Column(TypeName = "nvarchar(20)")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = default!;
     }
 }

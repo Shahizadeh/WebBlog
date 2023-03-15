@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WebBlog.Data.Entity.Authorizatiton;
+using WebBlog.Data.Entity.Blog;
 
 namespace WebBlog.Data
 {
@@ -28,6 +29,38 @@ namespace WebBlog.Data
                 await UserManager.AddToRoleAsync(admin, "Admin");
             }
 
+            if(!Context.Categories.Any())
+            {
+                var categories = new Category[] {
+                    new Category
+                    {
+                        Id= 1,
+                        Name= "Cat-1"
+                    },
+                    new Category
+                    {
+                        Id= 2,
+                        Name= "Cat-2"
+                    },
+                    new Category
+                    {
+                        Id= 3,
+                        Name= "Cat-3"
+                    },
+                    new Category
+                    {
+                        Id= 4,
+                        Name= "Cat-4"
+                    },
+                    new Category
+                    {
+                        Id= 5,
+                        Name= "Cat-5"
+                    }
+                };
+                await Context.Categories.AddRangeAsync(categories);
+                await Context.SaveChangesAsync();
+            }
         }
     }
 }
