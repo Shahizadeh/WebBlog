@@ -21,7 +21,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<AppDbContext>();
 
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
