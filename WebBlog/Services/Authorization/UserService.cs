@@ -11,16 +11,18 @@ namespace WebBlog.Services.Authorization
         Task<OperationResult> Login(LoginModel model);
         Task<OperationResult> RegisterUser(RegisterModel request);
         Task SignOut();
-        Task<AppUser> GetAppUser(ClaimsPrincipal user);
+        Task<AppUser> GetAppUser(ClaimsPrincipal? user);
     }
     public class UserService: IUserService
     {
-        private UserManager<AppUser> _userManager;
-        private SignInManager<AppUser> _signInManager;
-        public UserService(UserManager<AppUser> userManager,SignInManager<AppUser> signInManager)
+        private UserManager<AppUser> UserManager { get; }
+        private SignInManager<AppUser> SignInManager { get; }
+        private IHttpContextAccessor ContextAccessor { get; }
+        public UserService(UserManager<AppUser> userManager,SignInManager<AppUser> signInManager, IHttpContextAccessor contextAccessor)
         { 
-            _userManager= userManager;
-            _signInManager= signInManager;
+            UserManager= userManager;
+            SignInManager= signInManager;
+            ContextAccessor= contextAccessor;
         }
 
         public async Task<OperationResult> RegisterUser(RegisterModel request)
@@ -32,11 +34,11 @@ namespace WebBlog.Services.Authorization
                 FirstName = request.FirstName,
                 LastName = request.LastName,
             };
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var result = await UserManager.CreateAsync(user, request.Password);
 
             if(result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "User");
+                await UserManager.AddToRoleAsync(user, "User");
 
                 return new OperationResult { Success = true };
             }
@@ -53,7 +55,7 @@ namespace WebBlog.Services.Authorization
 
         public async Task<OperationResult> Login(LoginModel request)
         {
-            var signInResult = await _signInManager.PasswordSignInAsync(request.Email, request.Password, request.RememberMe, true);
+            var signInResult = await SignInManager.PasswordSignInAsync(request.Email, request.Password, request.RememberMe, true);
             if (signInResult.Succeeded)
             {
                 return new OperationResult { Success = true };
@@ -66,12 +68,13 @@ namespace WebBlog.Services.Authorization
 
         public async Task SignOut()
         {
-            await _signInManager.SignOutAsync();
+            await SignInManager.SignOutAsync();
         }
 
-        public async Task<AppUser> GetAppUser(ClaimsPrincipal user)
+        public async Task<AppUser> GetAppUser(ClaimsPrincipal? user)
         {
-            return await _userManager.GetUserAsync(user);
+            user = user ?? ContextAccessor.HttpContext?.User;
+            return await UserManager.GetUserAsync(user);
         }
     }
 }

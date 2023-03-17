@@ -1,0 +1,97 @@
+﻿@model WebBlog.Data.Entity.Blog.Post
+@{
+    ViewData["Title"] = Model.Title;
+    var IsAuthorized = (User.Identity?.IsAuthenticated) == null ? false : User.Identity.IsAuthenticated;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <input type="hidden" value="@Model.Id" id="postId" />
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title</h5>
+                <h6 class="card-text">@Model.CreatedOn.DateTime.ToString() By @Model.User.FirstName @Model.User.LastName</h6>
+            </div>
+            <img src="/Uploads/Posts/@Model.PhotoPath" class="card-img-top" alt="@Model.Title">
+            <div class="card-body">
+                <p class="card-text">@Model.Content</p>
+                @foreach (var category in Model.PostCategories)
+                {
+                    <a asp-controller="Post" asp-action="ByCategory" asp-route-categoryId="@category.Category.Id" class="btn btn-primary m-1">#@category.Category.Name</a>
+                }
+                <hr />
+                <h6>Add A Comment</h6>
+                    @if (IsAuthorized)
+                    {
+                        <div class="hstack gap-3">
+                            <input class="form-control me-auto" type="text" placeholder="Add your comment here..." aria-label="Add your item here..." id="commentContent">
+                            <button type="button" class="btn btn-secondary" id="btnAddComment">Add</button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-center">
+                            <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Post/Detail/@Model.Id" class="btn btn-primary">Login</a>
+                            <a class="btn">Or</a>
+                            <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="/Post/Detail/@Model.Id" class="btn btn-primary">Register</a>
+                        </div>
+                    }
+                <hr />
+                <div class="vstack gap-3" id="postComments">
+                    @if(Model.Comments != null)
+                    {
+                        @foreach (var comment in Model.Comments.OrderByDescending(e => e.CreatedOn))
+                        {
+                            <figure class="text-start">
+                                <blockquote class="blockquote">
+                                    <p>@comment.Content</p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                    @comment.CreatedOn.DateTime.ToString() By @comment.User.FirstName @comment.User.LastName
+                                </figcaption>
+                            </figure>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $("#btnAddComment").click(function(){
+            var data = {
+                PostId: $('#postId').val(),
+                Content: $('#commentContent').val()
+            };
+            $.ajax({
+                url:'/Comment/Add',
+                method:'post',
+                contentType:"application/json",
+                data: JSON.stringify(data)
+            }).done(function(data){
+                if(data.success){
+                    $('#commentContent').val('');
+                    let comments = []
+                    $.each(data.comments, function(i, item){
+                        comments.push(
+                            `<figure class="text-start">
+                                <blockquote class="blockquote">
+                                    <p>${item.content}</p>
+                                </blockquote>
+                                <figcaption class="blockquote-footer">
+                                    ${(new Date(item.createdOn)).toLocaleString()} By ${item.user.firstName} ${item.user.lastName}
+                                </figcaption>
+                            </figure>`
+                        );
+                    });
+                    $('#postComments').html(comments.join(''));
+                }
+                else{
+                    alert(data.message);
+                }
+            });
+        })
+    </script>
+}

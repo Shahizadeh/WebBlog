@@ -1,8 +1,40 @@
-﻿@{
+﻿@model WebBlog.Models.Blog.HomePageModel
+@{
     ViewData["Title"] = "Home Page";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="card mb-4">
+                <img src="/Uploads/Posts/@post.PhotoPath" class="card-img-top" alt="@post.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@post.Title</h5>
+                    <p class="card-text">@post.Content.Substring(0,post.Content.Length > 150 ? 150 : post.Content.Length)...</p>
+                    <a asp-controller="Post" asp-action="Detail" asp-route-postId="@post.Id" class="btn btn-primary">Read More...</a>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                Tags
+            </div>
+            <div class="card-body">
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Post" asp-action="ByCategory" asp-route-categoryId="@category.Id" class="btn btn-primary m-1">#@category.Name</a>
+                }
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                Search
+            </div>
+            <div class="card-body">
+                
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,0 +1,20 @@
+﻿@model WebBlog.Models.Blog.PostsByCategoryModel
+@{
+    ViewData["Title"] = "Search Result for Category : " + Model.Category.Name;
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="card mb-4">
+                <img src="/Uploads/Posts/@post.PhotoPath" class="card-img-top" alt="@post.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@post.Title</h5>
+                    <p class="card-text">@post.Content.Substring(0,post.Content.Length > 150 ? 150 : post.Content.Length)...</p>
+                    <a asp-controller="Post" asp-action="Detail" asp-route-postId="@post.Id" class="btn btn-primary">Read More...</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

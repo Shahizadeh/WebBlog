@@ -4,6 +4,7 @@ using WebBlog.Services.Authorization;
 
 namespace WebBlog.Controllers
 {
+    [Route("{controller}/{action}")]
     public class AccountController : Controller
     {
         private IUserService UserService { get; }
@@ -11,7 +12,7 @@ namespace WebBlog.Controllers
         {
             UserService = userService;
         }
-        [HttpGet("{controller}/{action}/{returnUrl?}")]
+        [HttpGet("{returnUrl?}")]
         public IActionResult Register(string? returnUrl)
         {
             var model = new RegisterModel();
@@ -36,7 +37,7 @@ namespace WebBlog.Controllers
             }
             return View(model);
         }
-        [HttpGet("{controller}/{action}/{returnUrl?}")]
+        [HttpGet("{returnUrl?}")]
         public IActionResult Login(string? returnUrl)
         {
             var model = new LoginModel();
@@ -52,7 +53,8 @@ namespace WebBlog.Controllers
                 var result = await UserService.Login(model);
                 if (result.Success)
                 {
-                    return Redirect("/");
+                    var url = model.ReturnUrl ?? "/";
+                    return Redirect(Uri.UnescapeDataString(url));
                 }
                 else
                 {

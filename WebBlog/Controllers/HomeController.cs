@@ -1,21 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebBlog.Models;
+using WebBlog.Models.Blog;
+using WebBlog.Services.Blog;
 
 namespace WebBlog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private IPostService PostService { get; } 
+        private ICategoryService CategoryService { get; }
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IPostService postService, ICategoryService categoryService)
         {
-            _logger = logger;
+            PostService = postService;
+            CategoryService = categoryService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var model = new HomePageModel();
+            model.Posts = await PostService.GetRecentPosts(10);
+            model.Categories = await CategoryService.GetAllCategories();
+            return View(model);
         }
 
         public IActionResult Privacy()

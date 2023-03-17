@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebBlog.Data;
 using WebBlog.Data.Entity.Authorizatiton;
 using WebBlog.Services.Authorization;
+using WebBlog.Services.Blog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole<int>>(options =>
     .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
