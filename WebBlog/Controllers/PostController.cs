@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebBlog.Data.Entity.Blog;
 using WebBlog.Models.Blog;
 using WebBlog.Services.Blog;
 
@@ -70,6 +71,26 @@ namespace WebBlog.Controllers
             model.Posts = await PostService.GetPostsByCategoryId(categoryId);
             model.Category = await CategoryService.GetById(categoryId);
             return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<IActionResult> Export()
+        {
+            var model = new ExportPostsModel();
+            model.StartDate = DateTime.Now;
+            model.Categories = await CategoryService.GetAllCategories();
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Export(ExportPostsModel request)
+        {
+            var result = await PostService.ExportPosts(request);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Export.xlsx");
+            //request.Categories = await CategoryService.GetAllCategories();
+            //return View(request);
         }
 
     }

@@ -32,6 +32,12 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Post" asp-action="Add" >Post</a>
                             </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Post" asp-action="Export">Export</a>
+                                </li>
+                            }
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
