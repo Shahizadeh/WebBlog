@@ -6,5 +6,6 @@ namespace WebBlog.Models.Blog
     {
         public List<Post> Posts { get; set; } = new List<Post>();
         public List<Category> Categories { get; set; } = new List<Category>();
+        public SearchPostsModel SearchPosts { get; set; } = new SearchPostsModel();
     }
 }

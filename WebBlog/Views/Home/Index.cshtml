@@ -33,8 +33,18 @@
                 Search
             </div>
             <div class="card-body">
-                
+                <form id="searchPostsForm" method="post" asp-controller="Post" asp-action="Search" >
+                    <div class="mb-3">
+                        <label for="SearchPosts-Title" class="form-label"></label>
+                        <input class="form-control" autocomplete="off" aria-required="true" type="text" data-val="true" data-val-required="The Post Title field is required." id="Title" name="Title" value="">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Title" data-valmsg-replace="true"></span>
+                    </div>
+                    <button id="searchSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Search</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

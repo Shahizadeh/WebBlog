@@ -1,0 +1,36 @@
+﻿@model WebBlog.Models.Blog.SearchPostsModel
+@{
+    ViewData["Title"] = "Search Result For : " + Model.Title;
+}
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var post in Model.Posts)
+        {
+            <div class="card mb-4">
+                <img src="/Uploads/Posts/@post.PhotoPath" class="card-img-top" alt="@post.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@post.Title</h5>
+                    <p class="card-text">@post.Content.Substring(0,post.Content.Length > 150 ? 150 : post.Content.Length)...</p>
+                    <a asp-controller="Post" asp-action="Detail" asp-route-postId="@post.Id" class="btn btn-primary">Read More...</a>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                Search
+            </div>
+            <div class="card-body">
+                <form id="searchPostsForm" method="post" asp-controller="Post" asp-action="Search">
+                    <div class="mb-3">
+                        <label asp-for="@Model.Title" class="form-label"></label>
+                        <input asp-for="@Model.Title" class="form-control" autocomplete="off" aria-required="true" />
+                        <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                    </div>
+                    <button id="searchSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

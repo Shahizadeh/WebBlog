@@ -15,6 +15,7 @@ namespace WebBlog.Services.Blog
         Task<List<Post>> GetPostsByCategoryId(int categoryId);
         Task<List<Post>> GetRecentPosts(int count);
         Task<OperationResult> SavePost(AddPostModel request, IFormFile photo);
+        Task<List<Post>> SearchByTitle(SearchPostsModel request);
     }
     public class PostService : IPostService
     {
@@ -165,6 +166,19 @@ namespace WebBlog.Services.Blog
             package.Save();
 
             return stream.ToArray();
+        }
+
+        public async Task<List<Post>> SearchByTitle(SearchPostsModel request)
+        {
+            var query = DbContext.Posts.AsQueryable();
+
+            query = query
+                .Where(e => EF.Functions.Like(e.Title, "%" + request.Title + "%"));
+
+            return await query
+                .OrderByDescending(e => e.CreatedOn)
+                .ToListAsync();
+
         }
     }
 }

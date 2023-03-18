@@ -89,9 +89,14 @@ namespace WebBlog.Controllers
         {
             var result = await PostService.ExportPosts(request);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Export.xlsx");
-            //request.Categories = await CategoryService.GetAllCategories();
-            //return View(request);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Search(SearchPostsModel request)
+        {
+            var posts = await PostService.SearchByTitle(request);
+            request.Posts = posts;
+            return View(request);
+        }
     }
 }
